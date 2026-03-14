@@ -1,6 +1,3 @@
-def main():
-    print("Hello from for-what!")
+import torch
 
-
-if __name__ == "__main__":
-    main()
+print(torch.cuda.is_available())
