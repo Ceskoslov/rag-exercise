@@ -25,7 +25,7 @@ class DataPreparationModule:
     DIFFICULTY_LABELS = ['very_easy', 'easy', 'medium', 'hard', 'very_hard']
 
     def __init__(self, data_dir: str):
-        self.data_path = data_path
+        self.data_path = data_dir
         self.documents: List[Document] = []
         self.chunks: List[Document] = []
         self.parent_child_map: Dict[str,str] = {}
