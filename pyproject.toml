@@ -39,6 +39,7 @@ dependencies = [
     "trl==0.13.0",
     "ujson>=5.4.0",
     "wandb==0.18.3",
+    "langchain==0.3.26",
 ]
 
 [tool.ruff.lint]
