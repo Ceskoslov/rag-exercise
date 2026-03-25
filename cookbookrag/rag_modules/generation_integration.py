@@ -10,6 +10,14 @@ from langchain_core.runnables import RunnablePassthrough
 logger = logging.getLogger(__name__)
 
 
+def _get_openai_api_base() -> str | None:
+    for env_name in ("OPENAI_API_BASE", "OPENAI_BASE_URL", "BASE_URL"):
+        value = os.getenv(env_name)
+        if value:
+            return value.strip()
+    return None
+
+
 class GenerationIntegrationModule:
     def __init__(
         self,
@@ -31,11 +39,14 @@ class GenerationIntegrationModule:
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
+        api_base = _get_openai_api_base()
+
         self.llm = ChatOpenAI(
-            model=self.model_name,
+            model_name=self.model_name,
             temperature=self.temperature,
             max_tokens=self.max_tokens,
-            api_key=api_key,
+            openai_api_key=api_key,
+            openai_api_base=api_base,
         )
 
         logger.info("LLM setup complete.")

@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Iterable
 
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import FAISS
@@ -24,26 +25,45 @@ class RetrievalOptimizationModule:
         logger.info("Retrievers set up successfully.")
 
     def hybrid_search(self, query: str, top_k: int = 3) -> list[Document]:
-        docs = self.hybrid_search(query, top_k * 3)
+        logger.info(f"Running hybrid search for query: {query}")
 
-        filterd_docs = []
+        vector_docs = self.vector_retriever.invoke(query)
+        bm25_docs = self.bm25_retriever.invoke(query)
+        reranked_docs = self._rrf_rerank(vector_docs, bm25_docs)
+
+        return reranked_docs[:top_k]
+
+    def metadata_filtered_search(
+        self, query: str, filters: dict, top_k: int = 3
+    ) -> list[Document]:
+        logger.info(
+            f"Running metadata-filtered search for query: {query} with filters: {filters}"
+        )
+
+        docs = self.hybrid_search(query, top_k=max(top_k * 3, 10))
+        filtered_docs = []
 
         for doc in docs:
-            match = True
-            for key, value in filter.items():
-                if key in doc.metadata:
-                    if isinstance(value, list):
-                        if doc.metadata[key] not in value:
-                            match = False
-                            break
-                    else:
-                        if doc.metadata[key] != value:
-                            match = False
-                            break
-            if match:
-                filterd_docs.append(doc)
-                if len(filterd_docs) >= top_k:
+            if self._matches_filters(doc, filters):
+                filtered_docs.append(doc)
+                if len(filtered_docs) >= top_k:
                     break
+
+        return filtered_docs
+
+    def _matches_filters(self, doc: Document, filters: dict) -> bool:
+        for key, value in filters.items():
+            if key not in doc.metadata:
+                return False
+
+            metadata_value = doc.metadata[key]
+            if isinstance(value, Iterable) and not isinstance(value, str):
+                if metadata_value not in value:
+                    return False
+            elif metadata_value != value:
+                return False
+
+        return True
 
     def _rrf_rerank(
         self, vector_docs: list[Document], bm25_docs: list[Document], k: int = 60

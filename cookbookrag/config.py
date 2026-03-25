@@ -11,12 +11,12 @@ class RAGConfig:
     """RAG系统配置类"""
 
     # 路径配置
-    data_path: str = "../../data/C8/cook"
+    data_path: str = "./data/C8/cook/dishes"
     index_save_path: str = "./vector_index"
 
     # 模型配置
     embedding_model: str = "BAAI/bge-small-zh-v1.5"
-    llm_model: str = "gpt-4.1"
+    llm_model: str = "coding-minimax-m2.7-free"
 
     # 检索配置
     top_k: int = 3

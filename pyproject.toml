@@ -43,6 +43,8 @@ dependencies = [
     "langchain-community>=0.3.21",
     "langchain-core>=0.3.83",
     "langchain-huggingface>=0.3.1",
+    "faiss-cpu>=1.13.2",
+    "rank-bm25>=0.2.2",
 ]
 
 [tool.ruff.lint]

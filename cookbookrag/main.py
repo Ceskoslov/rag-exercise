@@ -29,6 +29,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _get_openai_api_base() -> str | None:
+    for env_name in ("OPENAI_API_BASE", "OPENAI_BASE_URL", "BASE_URL"):
+        value = os.getenv(env_name)
+        if value:
+            return value.strip()
+    return None
+
+
 class RecipeRAGSystem:
     """食谱RAG系统主类"""
 
@@ -52,6 +60,10 @@ class RecipeRAGSystem:
         # 检查API密钥
         if not os.getenv("OPENAI_API_KEY"):
             raise ValueError("请设置 OPENAI_API_KEY 环境变量")
+
+        api_base = _get_openai_api_base()
+        if api_base:
+            logger.info(f"Using OpenAI-compatible API base: {api_base}")
 
     def initialize_system(self):
         """初始化所有模块"""
