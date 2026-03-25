@@ -40,6 +40,9 @@ dependencies = [
     "ujson>=5.4.0",
     "wandb==0.18.3",
     "langchain==0.3.26",
+    "langchain-community>=0.3.21",
+    "langchain-core>=0.3.83",
+    "langchain-huggingface>=0.3.1",
 ]
 
 [tool.ruff.lint]
